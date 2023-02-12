@@ -1,0 +1,31 @@
+#EditAreaCointainer {
+    display: flex;
+    width: 100vw;
+    height: 100vh;
+}
+
+#EditArea {
+    position: absolute;
+    top: 10%;
+    left: 25%;
+    width: 50vw;
+    height: 75vh;
+}
+
+h2 {
+    padding: 0;
+    margin-left: 0;
+    align-content: center;
+    font-family: monospace;
+}
+
+#TextArea {
+    width: 100%;
+    height: 90%;
+    /* margin-left: auto;
+    margin-right: auto;
+    margin-top: auto;
+    margin-bottom: auto; */
+    background-color: linen;
+    box-shadow: inset 0 -3em 3em rgba(0, 0, 0, 0.1), 0 0 0 2px rgb(255, 255, 255), 0.3em 0.3em 1em rgba(0, 0, 0, 0.3);
+}
