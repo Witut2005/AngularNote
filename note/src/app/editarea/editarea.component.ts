@@ -8,11 +8,16 @@ import { Component, OnInit } from '@angular/core';
 export class EditAreaComponent implements OnInit {
 
     isShift: boolean = false;
+    text:string[] = [];
 
     constructor() { 
     }
 
     ngOnInit(): void {
+
+        document.getElementById('Cursor')!.style.left = '0%';
+        document.getElementById('Cursor')!.style.top = '37px';
+
         document.addEventListener('keyup', (event)=>{
             if(event.key == 'Shift')
             {
@@ -29,29 +34,42 @@ export class EditAreaComponent implements OnInit {
                 return;
             }
 
+            if(event.key == 'Control')
+            {
+                const Tmp = document.getElementById('Text')?.lastChild as object;
+                console.log(Tmp);
+            }
+
+            if(event.key == 'Enter')
+            {
+                this.text.push('<br>');
+                return;
+            }
+
             if (event.key == 'Backspace')
             {
-                document.getElementById('Text')!.innerHTML = document.getElementById('Text')!.innerHTML.slice(0, -1);
+                this.text.pop();
+                document.getElementById('Text')!.innerHTML = '';
+
+                for(let x in this.text)
+                {
+                    document.getElementById('Text')!.innerHTML += this.text[x];
+                }
             }
 
             else 
             {
-
                 let character = event.key;
 
-                if(character >= 'a' && character <= 'z' && this.isShift)
-                    character.toLocaleUpperCase();
+                this.text.push(character);
 
-                document.getElementById('Text')!.innerHTML = document.getElementById('Text')!.innerHTML.slice(0, -1);
-                document.getElementById('Text')!.innerHTML += character + '|';
+                document.getElementById('Text')!.innerHTML = '';
 
+                for(let x in this.text)
+                {
+                    document.getElementById('Text')!.innerHTML += this.text[x];
+                }
             }
-        
-            
         })
-
-        document.getElementById('Text')!.innerHTML = '|';
-
     }
-
 }
