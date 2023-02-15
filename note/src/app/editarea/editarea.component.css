@@ -22,16 +22,25 @@ h2 {
 #TextArea {
     width: 100%;
     height: 90%;
-    /* margin-left: auto;
-    margin-right: auto;
-    margin-top: auto;
-    margin-bottom: auto; */
     background-color: linen;
     box-shadow: inset 0 -3em 3em rgba(0, 0, 0, 0.1), 0 0 0 2px rgb(255, 255, 255), 0.3em 0.3em 1em rgba(0, 0, 0, 0.3);
 }
 
 #Text {
+    width: 100%;
+    height: 100%;
     margin: 0;
+    word-wrap: break-word;
+}
+
+#Cursor {
+    display: inline;
+    margin: 0;
+}
+
+#Text::after {
+    content: attr(data-end);
+    color: #835C3B;
 }
 
 
