@@ -1,4 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input} from '@angular/core';
+import * as $ from 'jquery';
+
 var toPX = require('to-px');
 
 @Component({
@@ -8,63 +10,95 @@ var toPX = require('to-px');
 })
 export class EditAreaComponent implements OnInit {
 
+    @Input()backgroundColor: string;
+    
+
     isShift: boolean = false;
     text:string[] = [];
 
     textAreaHeight: number = 0;
+    textAreaWidth: number = 0;
     cursorHeight: number = 0;
+    numberOfLines: number = 0;
+
+
+    addButttonHandlers(): void
+    {
+
+        // DOWNLOAD HANDLER
+        $('#Buttons > button').on('click', ()=>{
+            alert('DONWLOAD');
+            const appBlob = new Blob(this.text, {type: 'ocetet-stream'});
+
+            const href = URL.createObjectURL(appBlob);
+            
+            const a = Object.assign(document.createElement('a'), {
+                href: href, 
+                style: 'display: none',
+                download: 'text.txt'
+            });
+
+            document.body.append(a);
+            a.click();
+            a.remove();
+
+        });
+
+
+        //LOAD HANDLER
+        $('#Buttons > input').on('change', ()=>{
+            alert('LOAD');
+
+        });
+    }
+
 
     constructor() { 
+        this.backgroundColor = 'red';
     }
 
 
 
     ngOnInit(): void {
 
-        // document.getElementById('Cursor')!.style.left = '0%';
-        // document.getElementById('Cursor')!.style.top = '37px';
+        this.addButttonHandlers();
 
         this.textAreaHeight = toPX('75vh');
-        alert(this.textAreaHeight);
+        console.log('textAreaHeight: ' + this.textAreaHeight);
+
+        this.textAreaWidth = toPX('50vw');
+        console.log('textAreaWidth: ' + this.textAreaWidth);
+
+        $(window).on('resize', ()=>{
+            this.textAreaHeight = toPX('75vh');
+            this.textAreaWidth = toPX('50vw');
+        })
+
+        new ResizeObserver(()=>{console.log('resized')}).observe(document.getElementById('TextArea') as Element)
 
         const setText = ()=>{
 
-            for(let x = 0; x < this.text.length - 1; x++)
-            {
-                let textNode = document.getElementById("Text")?.lastChild as Node;
-
-                if(textNode != null)
-                {
-                    let range = document.createRange() as Range;
-                    range.selectNodeContents(textNode);
-                    let rects = range.getClientRects();
-                    
-                    if(rects.length > 0)
-                        this.cursorHeight = rects[0].y;
-                }
-
-                document.getElementById('Text')!.innerHTML += this.text[x];
-
-            }
+            let str = this.text.toString().replaceAll(',', '').replaceAll('comma', ',').slice(0, -1);
+            
+            $('#Text')!.html(str);
 
             if(this.text.at(-1) == undefined)
-                document.getElementById('Text')!.setAttribute('data-end', ' ');
+                $('#Text').attr('data-end', ' ')
             else if(this.text.at(-1) != '<br>')
-                document.getElementById('Text')!.setAttribute('data-end', String(this.text[this.text.length-1]));
+                $('#Text').attr('data-end', String(this.text.at(-1)?.replace('comma', ',')))
             else
-                document.getElementById('Text')!.setAttribute('data-end', '');
-
+                $('#Text').attr('data-end', '');
 
         }
 
-        document.addEventListener('keyup', (event)=>{
+        $(document).on('keyup', (event)=>{
             if(event.key == 'Shift')
             {
                 this.isShift = false;
             }
         });
 
-        document.addEventListener('keydown', (event)=>{
+        $(document).on('keydown', (event)=>{
             
 
             if(event.key == 'Shift')
@@ -75,12 +109,12 @@ export class EditAreaComponent implements OnInit {
 
             if(event.key == 'Control')
             {
-                const Tmp = document.getElementById('Text')?.lastChild as object;
-                console.log(Tmp);
+                // console.log('text area height: ' + this.textAreaHeight + '\ntext area widht: ' + this.textAreaWidth);
+                console.log(this.text);
                 return;
             }
 
-            if(event.key == 'Alt' || event.key == 'AltGraph' || event.key == 'Meta' || event.key == 'ContextMenu')
+            if(event.key == 'Alt' || event.key == 'AltGraph' || event.key == 'Meta' || event.key == 'ContextMenu' || event.key == 'ArrowLeft' || event.key == 'ArrowRight')
             {
                 return;
             }
@@ -88,37 +122,42 @@ export class EditAreaComponent implements OnInit {
             if(event.key == 'Enter')
             {
 
-                console.log(this.cursorHeight)
-                if(this.cursorHeight >= this.textAreaHeight - 20)
+                if(this.cursorHeight + 16 >= this.textAreaHeight)
                     return;
 
                 this.text.push('<br>');
-                return;
+                $('#TextArea').height(Number($('#TextArea').height()) + toPX('1.2em'));
             }
 
-            if (event.key == 'Backspace')
+            else if (event.key == 'Backspace')
             {
+                if(this.text.at(-1) == '<br>')
+                {
+                    this.numberOfLines--;
+                    $('#TextArea').height(Number($('#TextArea').height()) - toPX('1.2em'));
+                }
+                else if(this.text.at(-2) == '<br>')
+                {
+                    this.text.pop();
+                    $('#TextArea').height(Number($('#TextArea').height()) - toPX('1.2em'));
+                }
                 this.text.pop();
-                document.getElementById('Text')!.innerHTML = '';
-
-
-                setText();
-
             }
 
             else 
             {
-                if(this.cursorHeight >= this.textAreaHeight - 4)
+                if(this.cursorHeight + 16>= this.textAreaHeight)
                     return;
 
                 let character = event.key;
+                
+                if(character == ',')
+                    character = 'comma';
+
                 this.text.push(character);
-
-                document.getElementById('Text')!.innerHTML = '';
-
-                setText();
-
             }
+            $('Text').html('');
+            setText();
         })
     }
 }
