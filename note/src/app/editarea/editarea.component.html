@@ -5,8 +5,11 @@
             <div id="Text" float="left"></div>
         </div>
         <div id="Buttons">
-            <button>Save File</button>
-            <input type="file" placeholder="Load File" />
+            <button float="left">Save File</button>
+            <form method="post" action="load_file.php">
+                <input type="file" placeholder="Load File">
+                <input type="submit" />
+            </form>
         </div>
     </div>
 </div>

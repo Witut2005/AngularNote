@@ -1,3 +1,4 @@
+import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 
@@ -10,7 +11,8 @@ import { EditAreaComponent } from './editarea/editarea.component';
     EditAreaComponent
   ],
   imports: [
-    BrowserModule  
+    BrowserModule,
+    HttpClientModule  
   ],
   providers: [], //services
   bootstrap: [AppComponent]//boot component

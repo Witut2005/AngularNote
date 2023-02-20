@@ -1,13 +1,19 @@
+import { NgModule } from '@angular/core';
 import { Component, OnInit, Input} from '@angular/core';
+import {HttpClient, HttpHandler} from '@angular/common/http';
 import * as $ from 'jquery';
 
 var toPX = require('to-px');
 
+
+
 @Component({
   selector: 'app-editarea',
   templateUrl: './editarea.component.html',
-  styleUrls: ['./editarea.component.css']
+  styleUrls: ['./editarea.component.css'],
+  providers: [HttpClient]
 })
+
 export class EditAreaComponent implements OnInit {
 
     @Input()backgroundColor: string;
@@ -20,14 +26,14 @@ export class EditAreaComponent implements OnInit {
     textAreaWidth: number = 0;
     cursorHeight: number = 0;
     numberOfLines: number = 0;
-
+    http: HttpClient;
 
     addButttonHandlers(): void
     {
 
         // DOWNLOAD HANDLER
         $('#Buttons > button').on('click', ()=>{
-            alert('DONWLOAD');
+            alert('DOWNLOAD');
             const appBlob = new Blob(this.text, {type: 'ocetet-stream'});
 
             const href = URL.createObjectURL(appBlob);
@@ -46,14 +52,16 @@ export class EditAreaComponent implements OnInit {
 
 
         //LOAD HANDLER
-        $('#Buttons > input').on('change', ()=>{
+        $('#Buttons > input').on('change', (event)=>{
             alert('LOAD');
-
+            // let data = ((event!.target as HTMLInputElement)!.files as FileList);
+            // this.http.post('http://localhost/php/load_file.php', data);
         });
     }
 
 
-    constructor() { 
+    constructor(httpClient: HttpClient) { 
+        this.http = httpClient;
         this.backgroundColor = 'red';
     }
 
