@@ -87,15 +87,8 @@ export class EditAreaComponent implements OnInit {
             Request.onload = () => {
                 let text = Request.responseText;
 
-                for(let i = 0; i < text.length - 1; i++)
+                for(let i = 0; i < text.length; i++)
                     this.text.push(text[i]);
-            
-                if(text.at(-1) == undefined)
-                    $('#Text').attr('data-end', ' ')
-                else if(this.text.at(-1) != '<br>')
-                    $('#Text').attr('data-end', String(text.at(-1)?.replace('comma', ',')))
-                else
-                    $('#Text').attr('data-end', '');
 
                 this.setText();
             };
