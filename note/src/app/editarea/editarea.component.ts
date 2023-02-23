@@ -28,6 +28,21 @@ export class EditAreaComponent implements OnInit {
     numberOfLines: number = 0;
     http: HttpClient;
 
+    setText = ()=>{
+
+        let str = this.text.toString().replaceAll(',', '').replaceAll('comma', ',').slice(0, -1);
+        
+        $('#Text')!.html(str);
+
+        if(this.text.at(-1) == undefined)
+            $('#Text').attr('data-end', ' ')
+        else if(this.text.at(-1) != '<br>')
+            $('#Text').attr('data-end', String(this.text.at(-1)?.replace('comma', ',')))
+        else
+            $('#Text').attr('data-end', '');
+
+    }
+
     addButttonHandlers(): void
     {
 
@@ -53,9 +68,40 @@ export class EditAreaComponent implements OnInit {
 
         //LOAD HANDLER
         $('#Buttons > input').on('change', (event)=>{
-            alert('LOAD');
-            // let data = ((event!.target as HTMLInputElement)!.files as FileList);
-            // this.http.post('http://localhost/php/load_file.php', data);
+
+            let data = ((event!.target as HTMLInputElement)!.files as FileList)[0];
+            let formData= new FormData();
+            formData.append('givenFile', data);
+            let Request = new XMLHttpRequest();
+            
+            Request.open('POST', 'http://localhost:80/load_file.php');
+
+            try{
+                Request.send(formData);
+            }
+            
+            catch {
+                console.log("HTTP POST REQUEST ERROR");
+            }
+
+            Request.onload = () => {
+                let text = Request.responseText;
+
+                for(let i = 0; i < text.length - 1; i++)
+                    this.text.push(text[i]);
+            
+                if(text.at(-1) == undefined)
+                    $('#Text').attr('data-end', ' ')
+                else if(this.text.at(-1) != '<br>')
+                    $('#Text').attr('data-end', String(text.at(-1)?.replace('comma', ',')))
+                else
+                    $('#Text').attr('data-end', '');
+
+                this.setText();
+            };
+             
+            // console.log(formData);
+            // console.log(this.http.post('http://localhost:80/load_file.php', formData));
         });
     }
 
@@ -84,20 +130,6 @@ export class EditAreaComponent implements OnInit {
 
         new ResizeObserver(()=>{console.log('resized')}).observe(document.getElementById('TextArea') as Element)
 
-        const setText = ()=>{
-
-            let str = this.text.toString().replaceAll(',', '').replaceAll('comma', ',').slice(0, -1);
-            
-            $('#Text')!.html(str);
-
-            if(this.text.at(-1) == undefined)
-                $('#Text').attr('data-end', ' ')
-            else if(this.text.at(-1) != '<br>')
-                $('#Text').attr('data-end', String(this.text.at(-1)?.replace('comma', ',')))
-            else
-                $('#Text').attr('data-end', '');
-
-        }
 
         $(document).on('keyup', (event)=>{
             if(event.key == 'Shift')
@@ -165,7 +197,7 @@ export class EditAreaComponent implements OnInit {
                 this.text.push(character);
             }
             $('Text').html('');
-            setText();
+            this.setText();
         })
     }
 }
