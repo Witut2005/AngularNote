@@ -27,6 +27,7 @@ export class EditAreaComponent implements OnInit {
     cursorHeight: number = 0;
     numberOfLines: number = 0;
     http: HttpClient;
+    loadedFile: boolean = false;
 
     setText = ()=>{
 
@@ -69,10 +70,27 @@ export class EditAreaComponent implements OnInit {
         //LOAD HANDLER
         $('#Buttons > input').on('change', (event)=>{
 
+            if(this.loadedFile)
+            {
+                alert('You have already loaded file bro <3');
+                return;
+            }
+
             let data = ((event!.target as HTMLInputElement)!.files as FileList)[0];
+            
+            if(data === undefined)
+                return;
+
+            this.loadedFile = true;
+            console.log('file name: ', data.name);
+
             let formData= new FormData();
             formData.append('givenFile', data);
             let Request = new XMLHttpRequest();
+
+            window.onerror = (error, url, line) => {
+                console.log('error : ', error);
+            }
             
             Request.open('POST', 'http://localhost:80/load_file.php');
 
@@ -84,6 +102,7 @@ export class EditAreaComponent implements OnInit {
                 console.log("HTTP POST REQUEST ERROR");
             }
 
+
             Request.onload = () => {
                 let text = Request.responseText;
 
@@ -92,6 +111,8 @@ export class EditAreaComponent implements OnInit {
 
                 this.setText();
             };
+
+            
              
             // console.log(formData);
             // console.log(this.http.post('http://localhost:80/load_file.php', formData));
